@@ -36,9 +36,13 @@ public class TaskDAO {
 	/*get an employee by id*/
 	
 	public Task findOne(Long Id) {
-		Long x=(long) 2;
 		System.out.println("In DAO="+Id);
 		return taskRepository.getOne(Id);
+	}
+	
+	public Task findbyid(Long tid) {
+		//System.out.println("In DAO="+Id);
+		return taskRepository.findBytid(tid);
 	}
 	
 	/*delete an employee*/

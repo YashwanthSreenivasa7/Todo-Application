@@ -8,4 +8,5 @@ import com.example.demo.model.Task;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByuid(Long uid);
+	Task findBytid(Long tid);
 }

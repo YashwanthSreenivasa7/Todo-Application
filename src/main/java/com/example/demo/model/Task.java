@@ -15,6 +15,9 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 
@@ -22,7 +25,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 
 @Entity
 @Table(name="Tasks")
@@ -33,7 +35,11 @@ public class Task implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long tid;
 	
+	@Size(min=1)
+	@NotBlank
+	@Column(unique=true, nullable=false)
 	private String tname;
+	
 	private String tdesc;
 	
 	private Long uid;
