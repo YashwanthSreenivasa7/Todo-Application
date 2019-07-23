@@ -39,7 +39,7 @@ public class TaskController {
 	UserDAO userDAO;
 	
 	@PostMapping("/userRegistration")
-	public Map<String, Object> createTask(@Valid @RequestBody User emp) {
+	public ResponseEntity< Map<String, Object> > createTask(@Valid @RequestBody User emp) {
 		String token=" ";
 		emp.setToken(token);
 		emp.setUpassword(userDAO.encode(emp.getUpassword()));
@@ -48,7 +48,7 @@ public class TaskController {
 		 HashMap<String, Object> map2 = new HashMap<>();
 		    map1.put("userId", emp.getUid());
 		    map2.put("userDetails",map1);
-		    return map2;
+		    return ResponseEntity.ok().body(map2);
 	}
 	
 	@CrossOrigin(origins = "http://localhost:3000")
@@ -78,7 +78,7 @@ public class TaskController {
 	
 	@GetMapping("/Logout/{id}")
 	
-	public Map<String, Object> getUserLoggedOutById(@PathVariable(value="id") Long empid,@RequestHeader("token") String token){
+	public ResponseEntity< Map<String, Object> > getUserLoggedOutById(@PathVariable(value="id") Long empid,@RequestHeader("token") String token){
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
 		System.out.println("Getting tasks by ID....="+empid);
@@ -92,16 +92,15 @@ public class TaskController {
 			res.setToken(" ");
 			userDAO.save(res);
 			map1.put("user", "LoggedOut");
+			map2.put("user",map1);
+			ResponseEntity.ok().body(map2);
 		}
-		map2.put("user",map1);
-		//List<Task> emp=taskDAO.findByUid(empid);
-		//System.out.println("Getting emplyees by ID....="+emp);
-		return map2;
+		return ResponseEntity.notFound().build();
 	}
 	
 	
 	@PostMapping("/tasks")
-	public Map<String, Object> createTask(@Valid @RequestBody Task emp,@RequestHeader("token") String token) {
+	public ResponseEntity< Map<String, Object> > createTask(@Valid @RequestBody Task emp,@RequestHeader("token") String token) {
 		//System.out.println("Pushing tasks id:"+emp.getUid());
 		//System.out.println("Pushing tasks token:"+token);
 		HashMap<String, Object> map1 = new HashMap<>();
@@ -112,13 +111,14 @@ public class TaskController {
 		if(res!=null) {
 		taskDAO.save(emp);
 		map1.put("taskAdded", "successfull");
-		}
 		map2.put("TaskDetails",map1);
-		return map2;
+		ResponseEntity.ok().body(map2);	
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 	@GetMapping("/tasks/{id}")
-	public Map<String, Object> getTaskById(@PathVariable(value="id") Long empid,@RequestHeader("token") String token){
+	public ResponseEntity< Map<String, Object> > getTaskById(@PathVariable(value="id") Long empid,@RequestHeader("token") String token){
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
 		System.out.println("Getting tasks by ID....="+empid);
@@ -128,15 +128,14 @@ public class TaskController {
 			System.out.println("sending tasks");
 			List<Task> emp=taskDAO.findByUid(empid);
 			map1.put("tasks",emp);
+			return ResponseEntity.ok().body(map1);	
 		}
-		//List<Task> emp=taskDAO.findByUid(empid);
-		//System.out.println("Getting emplyees by ID....="+emp);
-		return map1;
+		return ResponseEntity.notFound().build();
 	}	
 
 	/*update an task by tid*/
 	@PutMapping("/tasks/{uid}/{tid}")
-	public Map<String, Object> updateTask(@PathVariable(value="uid") Long uid,@PathVariable(value="tid") Long tid,@Valid @RequestBody Task taskDetails,@RequestHeader("token") String token){
+	public ResponseEntity< Map<String, Object> > updateTask(@PathVariable(value="uid") Long uid,@PathVariable(value="tid") Long tid,@Valid @RequestBody Task taskDetails,@RequestHeader("token") String token){
 
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
@@ -150,10 +149,12 @@ public class TaskController {
 				map1.put("UPDATED","succesfull");
 				map1.put("userId",uid);
 				map1.put("tasks",tid);
+				map2.put("Tasks",map1);
+				return ResponseEntity.ok().body(map2);	
 			}
+			return ResponseEntity.notFound().build();
 		}
-		map2.put("Tasks",map1);
-		return map2;
+		 return ResponseEntity.notFound().build();
 	}
 	
 	/*Delete a Task*/
@@ -178,9 +179,10 @@ public class TaskController {
 			else {
 				map1.put("DELETE","unSuccesfull");
 			}
+			map2.put("Tasks",map1);
+			return ResponseEntity.ok().body(map2);	
 		}
-		map2.put("Tasks",map1);
-		return ResponseEntity.ok().body(map2);	
+		return ResponseEntity.notFound().build();
 	}
 	
 
