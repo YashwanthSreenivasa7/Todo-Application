@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,10 +21,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dao.EmployeeDAO;
 import com.example.demo.dao.TaskDAO;
 import com.example.demo.dao.UserDAO;
-import com.example.demo.model.Employee;
 import com.example.demo.model.Task;
 import com.example.demo.model.User;
 
@@ -32,8 +31,6 @@ import com.example.demo.model.User;
 @RequestMapping("/todo")
 public class TaskController {
 	
-	@Autowired
-	EmployeeDAO employeeDAO;
 	
 	@Autowired
 	TaskDAO taskDAO;
@@ -56,7 +53,7 @@ public class TaskController {
 	
 	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping("/userLogin")
-	public Map<String, Object> getuserByUname(@Valid @RequestBody User emp){
+	public ResponseEntity< Map<String, Object> > getuserByUname(@Valid @RequestBody User emp){
 		String uname=emp.getUname();
 		String upassword=emp.getUpassword();
 		User res=userDAO.findByUname(uname,upassword);
@@ -72,9 +69,10 @@ public class TaskController {
 			userDAO.save(res);
 			map1.put("userId", res.getUid());
 			map1.put("token", res.getToken());
+			map2.put("userDetails",map1);
+			return ResponseEntity.ok().body(map2);
 		}
-		    map2.put("userDetails",map1);
-		    return map2;
+		   return ResponseEntity.notFound().build();
 	}
 	
 	
@@ -124,20 +122,18 @@ public class TaskController {
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
 		System.out.println("Getting tasks by ID....="+empid);
+		System.out.println("Getting tasks by ID....="+token);
 		User res=userDAO.findbyUidandToken(empid,token);
 		if(res!=null) {
+			System.out.println("sending tasks");
 			List<Task> emp=taskDAO.findByUid(empid);
-			map1.put("userId",empid);
 			map1.put("tasks",emp);
 		}
-		map2.put("Tasks",map1);
 		//List<Task> emp=taskDAO.findByUid(empid);
 		//System.out.println("Getting emplyees by ID....="+emp);
-		return map2;
+		return map1;
 	}	
-	
-	
-	
+
 	/*update an task by tid*/
 	@PutMapping("/tasks/{uid}/{tid}")
 	public Map<String, Object> updateTask(@PathVariable(value="uid") Long uid,@PathVariable(value="tid") Long tid,@Valid @RequestBody Task taskDetails,@RequestHeader("token") String token){
@@ -163,7 +159,7 @@ public class TaskController {
 	/*Delete a Task*/
 	@DeleteMapping("/tasks/{uid}/{tid}")
 	public ResponseEntity< Map<String, Object> > deleteTask(@PathVariable(value="uid") Long uid,@PathVariable(value="tid") Long tid,@RequestHeader("token") String token){
-		
+		System.out.println("deleting..");
 		HashMap<String, Object> map1 = new HashMap<>();
 		HashMap<String, Object> map2 = new HashMap<>();
 		User res=userDAO.findbyUidandToken(uid,token);
