@@ -29,8 +29,7 @@ import com.example.demo.model.User;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/todo")
-public class TaskController {
-	
+public class TaskController {	
 	
 	@Autowired
 	TaskDAO taskDAO;
